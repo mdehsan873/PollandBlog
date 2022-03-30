@@ -1,23 +1,38 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
 
 # Create your views here.
-
+from blog.form import BlogForm
+from django.contrib.auth.models import User
+from django.contrib import auth
 
 def index(request):
     return render(request, 'pages/index.html')
-def login(request):
-    if request.method == "POST":
-        form = (request.POST)
-        print(form.is_valid())
-        print('Post mathod')
-        if form.is_valid():
-            try:
-                form.save()
 
-                return redirect('/blog')
-            except Exception as e:
-                print(e)
-                pass
+
+
+def signup(request):
+    if request.method == "POST":
+        if request.POST['password1'] == request.POST['password2']:
+            try:
+                User.objects.get(username = request.POST['username'])
+                return render (request,'pages/signup.html', {'error':'Username is already taken!'})
+            except User.DoesNotExist:
+                user = User.objects.create_user(request.POST['username'],password=request.POST['password1'])
+                auth.login(request,user)
+                return redirect('/login')
+        else:
+            return render (request,'pages/signup.html', {'error':'Password does not match!'})
     else:
-        form = BlogForm()
-    return render(request, 'polls/add_blog.html', {'form': form})
+        return render(request,'pages/signup.html')
+
+def login(request):
+    if request.method == 'POST':
+        user = auth.authenticate(username=request.POST['username'],password = request.POST['password'])
+        if user is not None:
+            auth.login(request,user)
+            return redirect('pages/home')
+        else:
+            return render (request,'pages/login.html', {'error':'Username or password is incorrect!'})
+    else:
+        return render(request,'pages/login.html')

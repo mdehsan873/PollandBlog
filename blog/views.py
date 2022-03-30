@@ -7,11 +7,21 @@ from .models import Blog
 
 def index(request):
     data = Blog.objects.all()
+    print(data)
     blogs = {'blogs': data}
+
     print(blogs.values())
     return render(request, 'polls/blog_index.html', blogs)
-
-
+def delete(request,blog_id):
+    try:
+        blog = Blog.objects.get(pk=blog_id)
+        if blog.author==request.user.username:
+            blog.delete()
+        blogs=Blog.objects.all()
+        return render(request, 'polls/blog_index.html', {'blogs': blogs})
+    except Blog.DoesNotExist:
+        raise Http404("Question does not exist")
+    return render(request, 'polls/blog_read.html', {'blog': blog})
 def add(request):
     if request.method == "POST":
         form = BlogForm(request.POST)
@@ -26,7 +36,7 @@ def add(request):
                 print(e)
                 pass
     else:
-        form = BlogForm()
+        form = BlogForm({'author':request.user.username})
     return render(request, 'polls/add_blog.html', {'form': form})
 
 

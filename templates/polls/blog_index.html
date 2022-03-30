@@ -31,6 +31,9 @@
         </div>
     </div>
 </header>
+ {% if user.is_authenticated %}
+        <p>Welcome {{ user.username }} !!!</p>
+    {% endif %}
 <div class="container">
     <a href="/blog/add" class="btn btn-primary btn-sm">Add Blog</a>
     <div class="row">
