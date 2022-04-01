@@ -33,11 +33,10 @@
 </header>
  {% if user.is_authenticated %}
         <p>Welcome {{ user.username }} !!!</p>
-
+    {% endif %}
 <div class="container">
     <a href="/blog/add" class="btn btn-primary btn-sm">Add Blog</a>
     <div class="row">
-   {% endif %}
         <!-- Blog Entries Column -->
         <div class="col-md-8 mt-3 left">
             {% for post in blogs %}
@@ -46,6 +45,7 @@
                     <h2 class="card-title">{{ post.title }}</h2>
                     <p class="card-text text-muted h6">{{ post.slug }} </p>
                     <a href="{% url 'blog:details' post.id %}" class="btn btn-primary btn-sm">Read Blog</a>
+                    <a href="{% url 'blog:delete' post.id %}" class="btn btn-primary btn-sm">Delete Blog</a>
                 </div>
             </div>
             {% endfor %}

@@ -1,3 +1,4 @@
+from django.contrib import auth
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -9,16 +10,21 @@ def index(request):
     data = Blog.objects.all()
     print(data)
     blogs = {'blogs': data}
-
     print(blogs.values())
     return render(request, 'polls/blog_index.html', blogs)
+def user(request):
+    data = Blog.objects.filter(author=request.user.username)
+    print(data)
+    blogs = {'blogs': data}
+    print(blogs.values())
+    return render(request, 'polls/blog_user.html', blogs)
 def delete(request,blog_id):
     try:
         blog = Blog.objects.get(pk=blog_id)
         if blog.author==request.user.username:
             blog.delete()
         blogs=Blog.objects.all()
-        return render(request, 'polls/blog_index.html', {'blogs': blogs})
+        return render(request, 'polls/blog_user.html', {'blogs': blogs})
     except Blog.DoesNotExist:
         raise Http404("Question does not exist")
     return render(request, 'polls/blog_read.html', {'blog': blog})
@@ -46,3 +52,10 @@ def read(request, blog_id):
     except Blog.DoesNotExist:
         raise Http404("Question does not exist")
     return render(request, 'polls/blog_read.html', {'blog': blog})
+def logout(request):
+    auth.logout(request)
+    data = Blog.objects.all()
+    print(data)
+    blogs = {'blogs': data}
+    print(blogs.values())
+    return render(request, 'polls/blog_index.html', blogs)
