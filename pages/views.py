@@ -1,38 +1,38 @@
 from django.shortcuts import render, redirect
 
-
 # Create your views here.
 from blog.form import BlogForm
 from django.contrib.auth.models import User
 from django.contrib import auth
 
+
 def index(request):
     return render(request, 'pages/index.html')
-
 
 
 def signup(request):
     if request.method == "POST":
         if request.POST['password1'] == request.POST['password2']:
             try:
-                User.objects.get(username = request.POST['username'])
-                return render (request,'pages/signup.html', {'error':'Username is already taken!'})
+                User.objects.get(username=request.POST['username'])
+                return render(request, 'pages/signup.html', {'error': 'Username is already taken!'})
             except User.DoesNotExist:
-                user = User.objects.create_user(request.POST['username'],password=request.POST['password1'])
-                auth.login(request,user)
+                user = User.objects.create_user(request.POST['username'], password=request.POST['password1'])
+                auth.login(request, user)
                 return redirect('home')
         else:
-            return render (request,'pages/signup.html', {'error':'Password does not match!'})
+            return render(request, 'pages/signup.html', {'error': 'Password does not match!'})
     else:
-        return render(request,'pages/signup.html')
+        return render(request, 'pages/signup.html')
+
 
 def login(request):
     if request.method == 'POST':
-        user = auth.authenticate(username=request.POST['username'],password = request.POST['password'])
+        user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
         if user is not None:
-            auth.login(request,user)
+            auth.login(request, user)
             return redirect('pages/home')
         else:
-            return render (request,'pages/login.html', {'error':'Username or password is incorrect!'})
+            return render(request, 'pages/login.html', {'error': 'Username or password is incorrect!'})
     else:
-        return render(request,'pages/login.html')
+        return render(request, 'pages/login.html')
